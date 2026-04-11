@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.diary_outlined,
+                          Icons.note_outlined,
                           size: 64,
                           color: Colors.grey[400],
                         ),
