@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:io';
 import '../models/diary_entry.dart';
 import 'add_entry_screen.dart';
 
@@ -91,32 +90,6 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Image
-              if (widget.entry.imagePath != null &&
-                  widget.entry.imagePath!.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Hình ảnh',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(
-                        File(widget.entry.imagePath!),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
 
               // Content
               if (widget.entry.content.isNotEmpty)

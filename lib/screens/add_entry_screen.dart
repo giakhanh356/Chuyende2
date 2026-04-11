@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:intl/intl.dart';
 import '../models/diary_entry.dart';
 import '../database/database_provider.dart';
@@ -18,11 +16,9 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
   DateTime _selectedDateTime = DateTime.now();
-  String? _imagePath;
   bool _isReminderEnabled = false;
   String _reminderType = 'notification';
   String _reminderTime = '3 months';
-  final ImagePicker _imagePicker = ImagePicker();
   final DatabaseProvider _dbProvider = DatabaseProvider();
 
   final List<String> _reminderTimes = [
@@ -39,7 +35,6 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       _titleController = TextEditingController(text: widget.entry!.title);
       _contentController = TextEditingController(text: widget.entry!.content);
       _selectedDateTime = widget.entry!.dateTime;
-      _imagePath = widget.entry!.imagePath;
       _isReminderEnabled = widget.entry!.isReminderEnabled;
       _reminderType = widget.entry!.reminderType;
       _reminderTime = widget.entry!.reminderTime;
@@ -84,18 +79,6 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? pickedFile = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        _imagePath = pickedFile.path;
-      });
-    }
-  }
-
   Future<void> _saveDiaryEntry() async {
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,7 +91,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       id: widget.entry?.id,
       title: _titleController.text,
       dateTime: _selectedDateTime,
-      imagePath: _imagePath,
+      imagePath: null,
       isReminderEnabled: _isReminderEnabled,
       reminderType: _reminderType,
       reminderTime: _reminderTime,
@@ -196,37 +179,6 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                       ),
                     ],
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Image picker
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[400]!),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: [
-                    if (_imagePath != null && _imagePath!.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(_imagePath!),
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ElevatedButton.icon(
-                      onPressed: _pickImage,
-                      icon: const Icon(Icons.image),
-                      label: const Text('Chọn hình ảnh'),
-                    ),
-                  ],
                 ),
               ),
               const SizedBox(height: 16),

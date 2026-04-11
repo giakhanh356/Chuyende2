@@ -228,15 +228,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.grey[600],
                 ),
               ),
-              if (entry.imagePath != null && entry.imagePath!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Icon(
-                    Icons.image,
-                    color: Colors.blue[400],
-                    size: 20,
-                  ),
-                ),
               if (entry.isReminderEnabled)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
