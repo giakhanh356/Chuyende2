@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../models/diary_entry.dart';
 import '../database/database_provider.dart';
@@ -16,10 +19,12 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
   DateTime _selectedDateTime = DateTime.now();
+  String? _imageBase64;
   bool _isReminderEnabled = false;
   String _reminderType = 'notification';
   String _reminderTime = '3 months';
   final DatabaseProvider _dbProvider = DatabaseProvider();
+  final ImagePicker _imagePicker = ImagePicker();
 
   final List<String> _reminderTimes = [
     '3 months',
@@ -35,6 +40,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       _titleController = TextEditingController(text: widget.entry!.title);
       _contentController = TextEditingController(text: widget.entry!.content);
       _selectedDateTime = widget.entry!.dateTime;
+      _imageBase64 = widget.entry!.imageBase64;
       _isReminderEnabled = widget.entry!.isReminderEnabled;
       _reminderType = widget.entry!.reminderType;
       _reminderTime = widget.entry!.reminderTime;
@@ -79,6 +85,22 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final XFile? pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 85,
+    );
+
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _imageBase64 = base64Encode(bytes);
+      });
+    }
+  }
+
   Future<void> _saveDiaryEntry() async {
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,7 +113,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       id: widget.entry?.id,
       title: _titleController.text,
       dateTime: _selectedDateTime,
-      imagePath: null,
+      imageBase64: _imageBase64,
       isReminderEnabled: _isReminderEnabled,
       reminderType: _reminderType,
       reminderTime: _reminderTime,
@@ -179,6 +201,37 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                       ),
                     ],
                   ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Image picker
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    if (_imageBase64 != null && _imageBase64!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.memory(
+                            base64Decode(_imageBase64!),
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ElevatedButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Icons.image),
+                      label: const Text('Chọn hình ảnh'),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),

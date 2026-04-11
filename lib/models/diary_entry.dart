@@ -2,7 +2,7 @@ class DiaryEntry {
   int? id;
   String title;
   DateTime dateTime;
-  String? imagePath;
+  String? imageBase64;
   bool isReminderEnabled;
   String reminderType; // 'ring', 'email', 'notification'
   String reminderTime; // '3 months', '1 year', '10 years'
@@ -13,7 +13,7 @@ class DiaryEntry {
     this.id,
     required this.title,
     required this.dateTime,
-    this.imagePath,
+    this.imageBase64,
     this.isReminderEnabled = false,
     this.reminderType = 'notification',
     this.reminderTime = '3 months',
@@ -27,7 +27,7 @@ class DiaryEntry {
       'id': id,
       'title': title,
       'dateTime': dateTime.toIso8601String(),
-      'imagePath': imagePath,
+      'imageBase64': imageBase64,
       'isReminderEnabled': isReminderEnabled ? 1 : 0,
       'reminderType': reminderType,
       'reminderTime': reminderTime,
@@ -45,7 +45,7 @@ class DiaryEntry {
       id: idValue is int ? idValue : (idValue is String ? int.tryParse(idValue) : null),
       title: map['title'] as String? ?? '',
       dateTime: DateTime.parse(map['dateTime'] as String? ?? DateTime.now().toIso8601String()),
-      imagePath: map['imagePath'] as String?,
+      imageBase64: map['imageBase64'] as String?,
       isReminderEnabled: isReminderValue is int
           ? isReminderValue == 1
           : (isReminderValue is bool ? isReminderValue : false),
@@ -61,7 +61,7 @@ class DiaryEntry {
     int? id,
     String? title,
     DateTime? dateTime,
-    String? imagePath,
+    String? imageBase64,
     bool? isReminderEnabled,
     String? reminderType,
     String? reminderTime,
@@ -72,7 +72,7 @@ class DiaryEntry {
       id: id ?? this.id,
       title: title ?? this.title,
       dateTime: dateTime ?? this.dateTime,
-      imagePath: imagePath ?? this.imagePath,
+      imageBase64: imageBase64 ?? this.imageBase64,
       isReminderEnabled: isReminderEnabled ?? this.isReminderEnabled,
       reminderType: reminderType ?? this.reminderType,
       reminderTime: reminderTime ?? this.reminderTime,

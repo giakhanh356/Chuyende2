@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/diary_entry.dart';
@@ -90,6 +92,31 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+
+              // Image
+              if (widget.entry.imageBase64 != null && widget.entry.imageBase64!.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Hình ảnh',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.memory(
+                        base64Decode(widget.entry.imageBase64!),
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
 
               // Content
               if (widget.entry.content.isNotEmpty)
