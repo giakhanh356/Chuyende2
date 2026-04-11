@@ -18,15 +18,20 @@ class AddEntryScreen extends StatefulWidget {
 class _AddEntryScreenState extends State<AddEntryScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+  late TextEditingController _tagsController;
   DateTime _selectedDateTime = DateTime.now();
   String? _imageBase64;
+  bool _isFavorite = false;
   bool _isReminderEnabled = false;
   String _reminderType = 'notification';
-  String _reminderTime = '3 months';
+  String _reminderTime = '1 day';
   final DatabaseProvider _dbProvider = DatabaseProvider();
   final ImagePicker _imagePicker = ImagePicker();
 
   final List<String> _reminderTimes = [
+    '1 day',
+    '1 week',
+    '1 months',
     '3 months',
     '6 months',
     '1 year',
@@ -39,14 +44,17 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
     if (widget.entry != null) {
       _titleController = TextEditingController(text: widget.entry!.title);
       _contentController = TextEditingController(text: widget.entry!.content);
+      _tagsController = TextEditingController(text: widget.entry!.tags.join(', '));
       _selectedDateTime = widget.entry!.dateTime;
       _imageBase64 = widget.entry!.imageBase64;
+      _isFavorite = widget.entry!.isFavorite;
       _isReminderEnabled = widget.entry!.isReminderEnabled;
       _reminderType = widget.entry!.reminderType;
       _reminderTime = widget.entry!.reminderTime;
     } else {
       _titleController = TextEditingController();
       _contentController = TextEditingController();
+      _tagsController = TextEditingController();
     }
   }
 
@@ -54,6 +62,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _tagsController.dispose();
     super.dispose();
   }
 
@@ -114,6 +123,12 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
       title: _titleController.text,
       dateTime: _selectedDateTime,
       imageBase64: _imageBase64,
+      tags: _tagsController.text
+          .split(',')
+          .map((tag) => tag.trim())
+          .where((tag) => tag.isNotEmpty)
+          .toList(),
+      isFavorite: _isFavorite,
       isReminderEnabled: _isReminderEnabled,
       reminderType: _reminderType,
       reminderTime: _reminderTime,
@@ -143,8 +158,6 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 600;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.entry != null ? 'Chỉnh sửa nhật ký' : 'Thêm nhật ký'),
@@ -165,6 +178,52 @@ class _AddEntryScreenState extends State<AddEntryScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   prefixIcon: const Icon(Icons.title),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Tags field
+              TextField(
+                controller: _tagsController,
+                decoration: InputDecoration(
+                  labelText: 'Thẻ (phân tách bằng dấu phẩy)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  prefixIcon: const Icon(Icons.label),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Favorite toggle
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: _isFavorite ? Colors.red : null,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text('Đánh dấu yêu thích'),
+                      ],
+                    ),
+                    Switch(
+                      value: _isFavorite,
+                      onChanged: (value) {
+                        setState(() {
+                          _isFavorite = value;
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 16),

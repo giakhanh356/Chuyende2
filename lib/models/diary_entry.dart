@@ -3,6 +3,8 @@ class DiaryEntry {
   String title;
   DateTime dateTime;
   String? imageBase64;
+  List<String> tags;
+  bool isFavorite;
   bool isReminderEnabled;
   String reminderType; // 'ring', 'email', 'notification'
   String reminderTime; // '3 months', '1 year', '10 years'
@@ -14,6 +16,8 @@ class DiaryEntry {
     required this.title,
     required this.dateTime,
     this.imageBase64,
+    this.tags = const [],
+    this.isFavorite = false,
     this.isReminderEnabled = false,
     this.reminderType = 'notification',
     this.reminderTime = '3 months',
@@ -28,6 +32,8 @@ class DiaryEntry {
       'title': title,
       'dateTime': dateTime.toIso8601String(),
       'imageBase64': imageBase64,
+      'tags': tags,
+      'isFavorite': isFavorite ? 1 : 0,
       'isReminderEnabled': isReminderEnabled ? 1 : 0,
       'reminderType': reminderType,
       'reminderTime': reminderTime,
@@ -40,12 +46,17 @@ class DiaryEntry {
   factory DiaryEntry.fromMap(Map<String, dynamic> map) {
     final idValue = map['id'];
     final isReminderValue = map['isReminderEnabled'];
+    final isFavoriteValue = map['isFavorite'];
 
     return DiaryEntry(
       id: idValue is int ? idValue : (idValue is String ? int.tryParse(idValue) : null),
       title: map['title'] as String? ?? '',
       dateTime: DateTime.parse(map['dateTime'] as String? ?? DateTime.now().toIso8601String()),
       imageBase64: map['imageBase64'] as String?,
+      tags: (map['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
+      isFavorite: isFavoriteValue is int
+          ? isFavoriteValue == 1
+          : (isFavoriteValue is bool ? isFavoriteValue : false),
       isReminderEnabled: isReminderValue is int
           ? isReminderValue == 1
           : (isReminderValue is bool ? isReminderValue : false),
@@ -62,6 +73,8 @@ class DiaryEntry {
     String? title,
     DateTime? dateTime,
     String? imageBase64,
+    List<String>? tags,
+    bool? isFavorite,
     bool? isReminderEnabled,
     String? reminderType,
     String? reminderTime,
@@ -73,6 +86,8 @@ class DiaryEntry {
       title: title ?? this.title,
       dateTime: dateTime ?? this.dateTime,
       imageBase64: imageBase64 ?? this.imageBase64,
+      tags: tags ?? this.tags,
+      isFavorite: isFavorite ?? this.isFavorite,
       isReminderEnabled: isReminderEnabled ?? this.isReminderEnabled,
       reminderType: reminderType ?? this.reminderType,
       reminderTime: reminderTime ?? this.reminderTime,

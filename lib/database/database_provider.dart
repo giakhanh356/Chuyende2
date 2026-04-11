@@ -91,6 +91,13 @@ class DatabaseProvider {
         .toList();
   }
 
+  // Get favorite entries
+  Future<List<DiaryEntry>> getFavoriteDiaryEntries() async {
+    final entries = await getAllDiaryEntries();
+    return entries.where((entry) => entry.isFavorite).toList()
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+  }
+
   // Helper method to save to SharedPreferences
   Future<void> _saveToPref(SharedPreferences prefs, List<DiaryEntry> entries) async {
     final List<Map<String, dynamic>> jsonList = entries.map((e) => e.toMap()).toList();

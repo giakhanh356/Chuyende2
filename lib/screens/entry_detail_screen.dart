@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/diary_entry.dart';
+import '../database/database_provider.dart';
 import 'add_entry_screen.dart';
 
 class EntryDetailScreen extends StatefulWidget {
@@ -15,16 +16,31 @@ class EntryDetailScreen extends StatefulWidget {
 }
 
 class _EntryDetailScreenState extends State<EntryDetailScreen> {
+  final DatabaseProvider _dbProvider = DatabaseProvider();
+
+  Future<void> _toggleFavorite() async {
+    final updatedEntry = widget.entry.copyWith(isFavorite: !widget.entry.isFavorite);
+    await _dbProvider.updateDiaryEntry(updatedEntry);
+    if (mounted) {
+      Navigator.pop(context, true);
+    }
+  }
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 600;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chi tiết nhật ký'),
         backgroundColor: Colors.blue[600],
         elevation: 0,
         actions: [
+          IconButton(
+            icon: Icon(
+              widget.entry.isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: widget.entry.isFavorite ? Colors.red : null,
+            ),
+            onPressed: _toggleFavorite,
+            tooltip: widget.entry.isFavorite ? 'Bỏ yêu thích' : 'Đánh dấu yêu thích',
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
@@ -113,6 +129,30 @@ class _EntryDetailScreenState extends State<EntryDetailScreen> {
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+
+              // Tags
+              if (widget.entry.tags.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Thẻ',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: widget.entry.tags
+                          .map((tag) => Chip(label: Text(tag)))
+                          .toList(),
                     ),
                     const SizedBox(height: 16),
                   ],
