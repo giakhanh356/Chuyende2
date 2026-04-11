@@ -38,16 +38,21 @@ class DiaryEntry {
 
   // Convert from Map (database)
   factory DiaryEntry.fromMap(Map<String, dynamic> map) {
+    final idValue = map['id'];
+    final isReminderValue = map['isReminderEnabled'];
+
     return DiaryEntry(
-      id: map['id'] as int?,
-      title: map['title'] as String,
-      dateTime: DateTime.parse(map['dateTime'] as String),
+      id: idValue is int ? idValue : (idValue is String ? int.tryParse(idValue) : null),
+      title: map['title'] as String? ?? '',
+      dateTime: DateTime.parse(map['dateTime'] as String? ?? DateTime.now().toIso8601String()),
       imagePath: map['imagePath'] as String?,
-      isReminderEnabled: (map['isReminderEnabled'] as int) == 1,
-      reminderType: map['reminderType'] as String,
-      reminderTime: map['reminderTime'] as String,
-      content: map['content'] as String,
-      createdAt: DateTime.parse(map['createdAt'] as String),
+      isReminderEnabled: isReminderValue is int
+          ? isReminderValue == 1
+          : (isReminderValue is bool ? isReminderValue : false),
+      reminderType: map['reminderType'] as String? ?? 'notification',
+      reminderTime: map['reminderTime'] as String? ?? '3 months',
+      content: map['content'] as String? ?? '',
+      createdAt: DateTime.parse(map['createdAt'] as String? ?? DateTime.now().toIso8601String()),
     );
   }
 
