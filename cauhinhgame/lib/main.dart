@@ -120,7 +120,7 @@ class _GameSettingsScreenState extends State<GameSettingsScreen> {
                   backgroundColor: Colors.black, // Màu nút
                   foregroundColor: Colors.white, // Màu chữ
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8)
                   ),
                 ),
                 child: const Text(
